@@ -1,0 +1,43 @@
+
+services:
+  # NestJS сервер
+  server:
+    build:
+      context: ./my-nest-app # Путь к папке с NestJS проектом
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000" # Пробрасываем порт 3000
+    environment:
+      - DATABASE_HOST=localhost
+      - DATABASE_PORT=5432
+      - DATABASE_USER=postgres
+      - DATABASE_PASSWORD=Ilya10pr
+      - DATABASE_NAME=mydbtest
+    depends_on:
+      - db
+
+  # React клиент
+  client:
+    build:
+      context: ./my-app # Путь к папке с React проектом
+      dockerfile: Dockerfile
+    ports:
+      - "3001:3001" # Пробрасываем порт 5000
+    depends_on:
+      - server
+
+  # PostgreSQL база данных
+  db:
+    image: postgres:13
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: Ilya10pr
+      POSTGRES_DB: mydbtest
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+# Том для хранения данных PostgreSQL
+volumes:
+  postgres_data:
